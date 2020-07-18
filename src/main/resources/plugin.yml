@@ -1,0 +1,5 @@
+name: FoxLib
+version: ${pluginVersion}
+main: com.kitsune.foxlib.FoxLib
+api-version: 1.15
+authors: [kitsune]
