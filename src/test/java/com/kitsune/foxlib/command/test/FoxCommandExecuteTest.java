@@ -1,9 +1,10 @@
 package com.kitsune.foxlib.command.test;
 
-import com.kitsune.foxlib.command.FoxCommandResult;
 import com.kitsune.foxlib.command.FoxCommand;
 import com.kitsune.foxlib.command.FoxCommandAPI;
+import com.kitsune.foxlib.command.FoxCommandResult;
 import com.kitsune.foxlib.util.Log;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,9 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.easymock.EasyMock.mock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FoxCommandExecuteTest {
 
@@ -26,7 +25,7 @@ public class FoxCommandExecuteTest {
     }
 
     @Test
-    public void commandExecutetest () {
+    public void commandExecutetest() {
 
         // Register command
         FoxCommandAPI.getInstance().registerCommandsFromClass(null, this);
@@ -35,15 +34,15 @@ public class FoxCommandExecuteTest {
         Player player = mock(Player.class);
         EasyMock.expect(player.getName()).andReturn("OxKitsune");
         EasyMock.expect(player.getName()).andReturn("OxKitsune");
-        EasyMock.expect(player.getName()).andReturn("OxKitsune");
-        EasyMock.expect(player.getName()).andReturn("OxKitsune");
 
         // Mock permissions
         EasyMock.expect(player.hasPermission("foxlib.test.permission")).andReturn(true);
         EasyMock.expect(player.hasPermission("foxlib.test.permission2")).andReturn(false);
 
-        // Start mock
-        EasyMock.expectLastCall();
+        // Expect last call
+        EasyMock.expectLastCall().times(1);
+
+        // Start up mock
         EasyMock.replay(player);
 
         // Make sure these values aren't null
@@ -58,23 +57,20 @@ public class FoxCommandExecuteTest {
         // This should call Player#sendMessage(String)
         assertEquals(FoxCommandResult.INSUFFICIENT_PERMISSIONS, FoxCommandAPI.getInstance().getCommandTree().execute(player, "foxlib", new String[]{"perms2", "test"}), "Failed to execute permission2 check!");
 
-        // Clean up mock
-        EasyMock.expectLastCall();
-        EasyMock.replay(player);
     }
 
     @FoxCommand(path = "foxlib")
-    public void testCommand (Player player, String arg){
-       Log.info("Test Command", "Player: " + player.getName() + " Result: " + arg);
+    public void testCommand(Player player, String arg) {
+        Log.info("Test Command", "Player: " + player.getName() + " Result: " + arg);
     }
 
     @FoxCommand(path = "foxlib perms", permission = "foxlib.test.permission")
-    public void permsTestCommand (Player player, String arg){
+    public void permsTestCommand(Player player, String arg) {
         Log.info("Test Command", "Player " + player.getName() + " has permission: foxlib.test.permission");
     }
 
-    @FoxCommand(path = "foxlib perms2", permission = "foxlib.test.permission2")
-    public void permsTest2Command (Player player, String arg){
+    @FoxCommand(path = "foxlib perms2", permission = "foxlib.test.permission2", noPermissionsMessage = "")
+    public void permsTest2Command(Player player, String arg) {
         Log.info("Test Command", "Player " + player.getName() + " has permission: foxlib.test.permission2");
     }
 }

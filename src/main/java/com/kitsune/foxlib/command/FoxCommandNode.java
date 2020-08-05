@@ -138,4 +138,13 @@ public class FoxCommandNode<T> {
     public void setRegisteredCommand(RegisteredCommand registeredCommand) {
         this.registeredCommand = registeredCommand;
     }
+
+    /**
+     * Get the path to the node.
+     *
+     * @return - the path to the node
+     */
+    public String getPath() {
+        return parent == null ? "Root" : parent.getPath() + "." + (requiredClass == null ? requiredArg : "<" + requiredClass.getSimpleName() + ">");
+    }
 }

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.kitsune'
-version = '0.0.0.1'
+version = '0.0.1'
 description = 'FoxAPI'
 sourceCompatibility = '1.8'
 
