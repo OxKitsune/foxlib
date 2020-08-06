@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.kitsune.foxlib.FoxLib;
 import com.kitsune.foxlib.util.Log;
+import com.kitsune.foxlib.util.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -39,15 +40,15 @@ public class FoxCommandTree {
         }
 
         // Add all the paths to the command tree
-        for (int i = 0; i < requiredPaths.size(); i++) {
+        for (String[] requiredPath : requiredPaths) {
 
             // Store previous parent
             FoxCommandNode<?> previousParent = null;
 
             // Loop through all sub arguments in command
-            for (int j = 0; j < requiredPaths.get(i).length; j++) {
+            for (int j = 0; j < requiredPath.length; j++) {
 
-                String arg = requiredPaths.get(i)[j];
+                String arg = requiredPath[j];
                 FoxCommandNode<?> parent = (j == 0) ? root : previousParent;
 
                 // Check whether the node already exists, if so set the previous parent to it and return
@@ -64,7 +65,7 @@ public class FoxCommandTree {
 
 
                 // If this is the last node in the path, add the required parameters
-                if (j == requiredPaths.get(i).length - 1) {
+                if (j == requiredPath.length - 1) {
 
                     // Add the parameters to the command tree
                     for (Parameter parameter : registeredCommand.getMethod().getParameters()) {
@@ -88,9 +89,6 @@ public class FoxCommandTree {
                 }
             }
         }
-
-        // Debug
-        root.print("");
     }
 
 
@@ -141,6 +139,10 @@ public class FoxCommandTree {
         // Check if all args have been parsed
         if (args.isEmpty()) {
 
+            if(node.getRegisteredCommand() == null){
+                return FoxCommandResult.INVALID_COMMAND;
+            }
+
             // Execute command
             try {
 
@@ -149,6 +151,12 @@ public class FoxCommandTree {
 
                 // Add op permission check
                 if ((permission.equalsIgnoreCase("op") && commandSender.isOp()) || permission.equalsIgnoreCase("") || commandSender.hasPermission(permission)) {
+
+                    // Make sure the command can be run by the command sender's type
+                    if(ReflectionUtil.canBeCastTo(commandSender, node.getRegisteredCommand().getMethod().getParameterTypes()[0])) {
+                        commandSender.sendMessage(ChatColor.RED + "Command cannot be run by " + commandSender.getClass().getSimpleName());
+                        return FoxCommandResult.INVALID_SENDER_TYPE;
+                    }
 
                     // Execute the command with the parsed arguments
                     node.getRegisteredCommand().getMethod().invoke(node.getRegisteredCommand().getInstance(), parsedArgs.toArray());

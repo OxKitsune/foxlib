@@ -3,10 +3,10 @@ plugins {
     id 'maven-publish'
 }
 
+
 group = 'com.kitsune'
 version = '0.0.1'
-description = 'FoxAPI'
-sourceCompatibility = '1.8'
+description = 'foxlib'
 
 repositories {
     mavenLocal()
@@ -72,4 +72,16 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = description
+            version = version
+
+            from components.java
+        }
+    }
+}
 

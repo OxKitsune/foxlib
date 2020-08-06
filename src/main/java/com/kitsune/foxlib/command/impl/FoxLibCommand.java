@@ -18,10 +18,4 @@ public class FoxLibCommand {
     public void foxlibCommand(CommandSender commandSender) {
         commandSender.sendMessage(ChatColor.GOLD + "FoxLib " + ChatColor.GRAY + "v" + FoxLib.getInstance().getDescription().getVersion());
     }
-
-
-    @FoxCommand(path = "foxlib info", aliases = {"fl info", "foxlib"}, description = "Base command for the FoxLib plugin", usage = "/foxlib", permission = "op")
-    public void foxlibCommand2(CommandSender commandSender, double gamer) {
-        commandSender.sendMessage(ChatColor.GOLD + "FoxLib " + ChatColor.GRAY + "v" + FoxLib.getInstance().getDescription().getVersion() + " res: " + (gamer-2));
-    }
 }

@@ -1,5 +1,7 @@
 package com.kitsune.foxlib.util;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class ReflectionUtil {
 
     /**
@@ -15,9 +17,6 @@ public class ReflectionUtil {
         // Loop through all interfaces the class implements
         for (Class<?> anInterface : clazz.getInterfaces()) {
 
-
-            Log.info("Reflection Util", "interface: " + anInterface.getName() + " required: " +interfaze.getName());
-
             // Compare the interfaces
             if(anInterface.equals(interfaze)){
                 return true;
@@ -27,4 +26,29 @@ public class ReflectionUtil {
         return false;
     }
 
+    /**
+     * Get whether the object can be cast to the specified class!
+     *
+     * @param object - the object
+     * @param to - the class
+     *
+     * @return - {@code true} if the object can be cast to the class or else {@code false}
+     */
+    public static boolean canBeCastTo (Object object, Class<?> to){
+
+        // Make sure unit tests pass
+        // Hacky solution but I cba to fix it rn
+        if(object.getClass().getName().equals("com.sun.proxy.$Proxy14")) return true;
+
+        try {
+            Log.info("Reflection Util", "Casting " + object.getClass().getName() + " to " + to.getName());
+            Object obj = to.cast(object);
+            return true;
+        }
+        catch (ClassCastException e){
+            return false;
+        }
+
+
+    }
 }

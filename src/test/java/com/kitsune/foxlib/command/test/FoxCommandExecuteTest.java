@@ -57,6 +57,7 @@ public class FoxCommandExecuteTest {
         // This should call Player#sendMessage(String)
         assertEquals(FoxCommandResult.INSUFFICIENT_PERMISSIONS, FoxCommandAPI.getInstance().getCommandTree().execute(player, "foxlib", new String[]{"perms2", "test"}), "Failed to execute permission2 check!");
 
+        assertEquals(FoxCommandResult.INVALID_COMMAND, FoxCommandAPI.getInstance().getCommandTree().execute(player, "libfox", new String[]{"xd"}), "Failed invalid command test!");
     }
 
     @FoxCommand(path = "foxlib")
