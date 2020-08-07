@@ -91,7 +91,14 @@ public class FoxCommandTree {
         }
     }
 
-
+    /**
+     * Execute the command by traversing the command tree.
+     *
+     * @param commandSender - the command sender
+     * @param name          - the name of the command
+     * @param args          - the arguments of the command
+     * @return - a {@link FoxCommandResult} that describes whether the command was executed successfully or not
+     */
     public FoxCommandResult execute(CommandSender commandSender, String name, String[] args) {
 
         // Get the command node
@@ -108,6 +115,13 @@ public class FoxCommandTree {
 
                 // Add op permission check
                 if ((permission.equalsIgnoreCase("op") && commandSender.isOp()) || permission.equalsIgnoreCase("") || commandSender.hasPermission(permission)) {
+
+                    // Make sure the command can be run by the command sender's type
+                    if (!ReflectionUtil.canBeCastTo(commandSender, commandNode.getRegisteredCommand().getMethod().getParameterTypes()[0])) {
+                        commandSender.sendMessage(ChatColor.RED + "Command cannot be run by " + commandSender.getClass().getSimpleName());
+                        return FoxCommandResult.INVALID_SENDER_TYPE;
+                    }
+
                     commandNode.getRegisteredCommand().getMethod().invoke(commandNode.getRegisteredCommand().getInstance(), commandSender);
                     return FoxCommandResult.SUCCESS;
                 } else {
@@ -120,7 +134,6 @@ public class FoxCommandTree {
             }
         } else {
 
-            Log.info("Command Tree", "Traversing tree...");
             Log.info("Command Tree", "Command: /" + commandNode.getRequiredArg() + " " + String.join(" ", args));
             List<Object> parsedArgs = new ArrayList<>();
             parsedArgs.add(commandSender);
@@ -139,7 +152,7 @@ public class FoxCommandTree {
         // Check if all args have been parsed
         if (args.isEmpty()) {
 
-            if(node.getRegisteredCommand() == null){
+            if (node.getRegisteredCommand() == null) {
                 return FoxCommandResult.INVALID_COMMAND;
             }
 
@@ -153,7 +166,7 @@ public class FoxCommandTree {
                 if ((permission.equalsIgnoreCase("op") && commandSender.isOp()) || permission.equalsIgnoreCase("") || commandSender.hasPermission(permission)) {
 
                     // Make sure the command can be run by the command sender's type
-                    if(ReflectionUtil.canBeCastTo(commandSender, node.getRegisteredCommand().getMethod().getParameterTypes()[0])) {
+                    if (!ReflectionUtil.canBeCastTo(commandSender, node.getRegisteredCommand().getMethod().getParameterTypes()[0])) {
                         commandSender.sendMessage(ChatColor.RED + "Command cannot be run by " + commandSender.getClass().getSimpleName());
                         return FoxCommandResult.INVALID_SENDER_TYPE;
                     }
@@ -164,7 +177,8 @@ public class FoxCommandTree {
                 } else {
 
                     // Send the no permission message to the player
-                    if(!node.getRegisteredCommand().getFoxCommand().noPermissionsMessage().equals("")) commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', node.getRegisteredCommand().getFoxCommand().noPermissionsMessage()));
+                    if (!node.getRegisteredCommand().getFoxCommand().noPermissionsMessage().equals(""))
+                        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', node.getRegisteredCommand().getFoxCommand().noPermissionsMessage()));
                     return FoxCommandResult.INSUFFICIENT_PERMISSIONS;
                 }
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -193,7 +207,7 @@ public class FoxCommandTree {
                 localArgs.remove();
 
                 FoxCommandResult result = traverseTree(commandSender, child, localArgs, localParsedArgs);
-                if(result == FoxCommandResult.INVALID_COMMAND) continue;
+                if (result == FoxCommandResult.INVALID_COMMAND) continue;
                 return result;
             }
 
@@ -208,7 +222,7 @@ public class FoxCommandTree {
             localArgs.remove();
             localParsedArgs.add(parsedArgument);
             FoxCommandResult result = traverseTree(commandSender, child, localArgs, localParsedArgs);
-            if(result == FoxCommandResult.INVALID_COMMAND) continue;
+            if (result == FoxCommandResult.INVALID_COMMAND) continue;
             return result;
         }
 

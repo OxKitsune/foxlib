@@ -6,6 +6,7 @@ import com.kitsune.foxlib.command.parser.MaterialParser;
 import com.kitsune.foxlib.command.parser.ShortParser;
 import com.kitsune.foxlib.command.parser.StringParser;
 import com.kitsune.foxlib.util.Log;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -247,8 +248,8 @@ public class FoxCommandAPI {
             PluginCommand command = constructor.newInstance(commandLabel, plugin);
 
             // Set the command's properties
-            command.setDescription(foxCommand.description());
-            command.setUsage(foxCommand.usage());
+            command.setDescription(ChatColor.translateAlternateColorCodes('&', foxCommand.description()));
+            command.setUsage(ChatColor.translateAlternateColorCodes('&', foxCommand.usage()));
             command.setExecutor(commandExecutor);
 
             // Register the command to the command map

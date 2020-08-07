@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class FoxCommandExecutor implements CommandExecutor {
 
     /** Reference to the fox command api */
-    private FoxCommandAPI foxCommandAPI;
+    private final FoxCommandAPI foxCommandAPI;
 
     /**
      * Construct a new {@link FoxCommandAPI}.
