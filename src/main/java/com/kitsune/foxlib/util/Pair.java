@@ -1,6 +1,8 @@
 package com.kitsune.foxlib.util;
 
-public class Pair<L, R> {
+import java.util.Objects;
+
+public class Pair<L, R> implements Cloneable {
 
     /**
      * The left value of the pair
@@ -66,5 +68,19 @@ public class Pair<L, R> {
      */
     public Pair<L, R> clone () {
         return new Pair<L, R>(left, right);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pair<?, ?> pair = (Pair<?, ?>) o;
+        return Objects.equals(left, pair.left) &&
+                Objects.equals(right, pair.right);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(left, right);
     }
 }
