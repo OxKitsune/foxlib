@@ -2,8 +2,10 @@ package com.kitsune.foxlib.util;
 
 import com.google.common.base.Preconditions;
 import com.kitsune.foxlib.FoxLib;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemFlag;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ItemBuilder foxlib v0.1.0
@@ -178,6 +181,15 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Add the enchantment glow to the {@link ItemStack} if the specified item is null.
+     * @param addGlow - whether to add glow or not
+     * @return - this {@link ItemBuilder}
+     */
+    public ItemBuilder addGlow (boolean addGlow) {
+        return addGlow ? addGlow() : this;
+    }
+
     class GlowEnchant extends Enchantment {
 
         public GlowEnchant(@NotNull NamespacedKey key) {
@@ -223,6 +235,64 @@ public class ItemBuilder {
         public boolean canEnchantItem(ItemStack item) {
             return true;
         }
+    }
+
+    /**
+     * Get an {@link ItemBuilder} from a {@link ConfigurationSection}.
+     *
+     * @param configurationSection - the configuration section to get the item stack from
+     *
+     * @return - the created {@link ItemBuilder}
+     */
+    public static ItemBuilder fromConfigurationSection (ConfigurationSection configurationSection) {
+
+        ItemBuilder itemBuilder = new ItemBuilder();
+
+        if(!configurationSection.isString("type")){
+            throw new IllegalArgumentException("Configuration Section doesn't contain a valid material (Make sure the material is under \"type\"");
+        }
+
+        // Get the material from the configuration section
+        itemBuilder.setType(Material.valueOf(configurationSection.getString("type").toUpperCase()));
+
+        // Set the display name if required
+        if(configurationSection.isString("display-name")){
+            itemBuilder.setName(ChatColor.translateAlternateColorCodes('&', configurationSection.getString("display-name")));
+        }
+
+        // Set the lore if required
+        if(configurationSection.isList("lore")){
+
+            // Parse the colour codes automatically
+            itemBuilder.setLore(
+                    configurationSection.getStringList("lore")
+                            .stream()
+                            .map(loreItem -> ChatColor.translateAlternateColorCodes('&', loreItem))
+                            .collect(Collectors.toList())
+            );
+        }
+
+        // Set the amount if required
+        // Default amount = 1
+        if(configurationSection.isInt("amount")){
+            itemBuilder.setAmount(configurationSection.getInt("amount"));
+        }
+
+        // Add item flags if required
+        if(configurationSection.isList("item-flags")){
+
+            // Loop through all possible item flags and add them if required
+            configurationSection.getStringList("item-flags").forEach(itemFlag -> {
+                itemBuilder.addItemFlag(ItemFlag.valueOf(itemFlag));
+            });
+        }
+
+        // Add glow if required
+        if(configurationSection.isBoolean("glow")){
+            itemBuilder.addGlow(configurationSection.getBoolean("glow"));
+        }
+
+        return itemBuilder;
     }
 
     /**
